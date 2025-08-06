@@ -1,0 +1,23 @@
+{
+  "name": "full-stack",
+  "version": "1.0.0",
+  "description": "REPO FOR THE PRACTICALS OF FS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SupriyaDutta167/23BCS13291_FS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SupriyaDutta167/23BCS13291_FS/issues"
+  },
+  "homepage": "https://github.com/SupriyaDutta167/23BCS13291_FS#readme",
+  "devDependencies": {
+    "tailwindcss": "^4.1.11"
+  }
+}

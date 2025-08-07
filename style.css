@@ -94,7 +94,7 @@ a:hover {
 .about, .skills, .projects, .education, .contact {
     padding: 20px;
     margin: 20px auto;
-    border-radius: 10px;
+    border-radius: 20px;
     width: 90%; 
     max-width: 1000px; 
 }

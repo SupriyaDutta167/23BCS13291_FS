@@ -1,57 +1,81 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import * as authAPI from '../services/authAPI';
+// Path: frontend/src/context/AuthContext.jsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  loginUser, 
+  registerUser as apiRegisterUser, // aliased to avoid name conflict
+  registerSeller as apiRegisterSeller, // aliased
+  logoutUser, 
+  getCurrentUser 
+} from '../services/authAPI';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // Fixed: removed extra '='
+  const [loading, setLoading] = useState(true); // Fixed: removed extra '='
 
+  // fetch user on page load
   useEffect(() => {
-    const load = async () => {
-      if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
-      }
+    (async () => {
       try {
-        const res = await authAPI.me();
+        const res = await getCurrentUser();
         setUser(res.data);
-      } catch (err) {
-        console.error('Profile fetch failed', err);
-        localStorage.removeItem('token');
-        setToken(null);
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);
       }
-    };
-    load();
-  }, [token]);
+    })();
+  }, []);
 
-  const login = async (email, password) => {
-    const res = await authAPI.login({ email, password });
-    const newToken = res.data.token;
-    localStorage.setItem('token', newToken);
-    setToken(newToken);
-    // profile will be fetched by effect
-    return res;
+  const login = async (credentials) => {
+    const res = await loginUser(credentials); // This now correctly calls the right API endpoint
+    setUser(res.data);
+    return res.data;
   };
 
-  const register = async (payload) => {
-    const res = await authAPI.register(payload);
-    return res;
+  // Specific function for USER registration
+  const registerUser = async (userData) => {
+    const res = await apiRegisterUser(userData);
+    setUser(res.data);
+    return res.data;
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
+  // Specific function for SELLER registration
+  const registerSeller = async (userData) => {
+    const res = await apiRegisterSeller(userData);
+    setUser(res.data);
+    return res.data;
+  };
+
+  const logout = async () => {
+    await logoutUser();
     setUser(null);
   };
 
+  const getUser = async () => {
+    try {
+      const res = await getCurrentUser();
+      setUser(res.data);
+      return res.data;
+    } catch {
+      setUser(null);
+      return null;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, token, login, register, logout }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        loading, 
+        login, 
+        registerUser, // renamed from 'register'
+        registerSeller, // added
+        logout, 
+        getUser 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
